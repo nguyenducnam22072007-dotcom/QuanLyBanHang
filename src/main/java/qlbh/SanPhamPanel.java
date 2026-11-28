@@ -19,7 +19,7 @@ public class SanPhamPanel extends CrudPanel {
 
     public SanPhamPanel() {
         txtMa.setEditable(false);
-        init();
+        init("sản phẩm");
     }
 
     @Override

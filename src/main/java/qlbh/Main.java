@@ -14,12 +14,14 @@ public class Main {
         } catch (Exception ignored) {
             // dùng giao diện mặc định
         }
-        FontUIResource font = new FontUIResource("SansSerif", Font.PLAIN, 14);
+        FontUIResource font = new FontUIResource("Segoe UI", Font.PLAIN, 14);
         for (Object key : Collections.list(UIManager.getDefaults().keys())) {
             if (UIManager.get(key) instanceof FontUIResource) {
                 UIManager.put(key, font);
             }
         }
+
+        Theme.install();
 
         SwingUtilities.invokeLater(() -> {
             try {

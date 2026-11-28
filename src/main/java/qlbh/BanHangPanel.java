@@ -1,9 +1,10 @@
 package qlbh;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -45,40 +48,62 @@ public class BanHangPanel extends JPanel implements Refreshable {
     private final JLabel lblTotal = new JLabel("Tổng tiền: 0 đ");
 
     public BanHangPanel() {
-        setLayout(new BorderLayout(0, 8));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(0, 10));
+        setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        row1.add(new JLabel("Khách hàng:"));
-        row1.add(cboKH);
-        row1.add(new JLabel("Nhân viên bán:"));
-        row1.add(cboNV);
+        cboKH.setPreferredSize(new Dimension(280, 32));
+        cboNV.setPreferredSize(new Dimension(220, 32));
+        cboSP.setPreferredSize(new Dimension(380, 32));
+        spnSL.setPreferredSize(new Dimension(80, 32));
 
-        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        row2.add(new JLabel("Sản phẩm:"));
-        row2.add(cboSP);
-        row2.add(new JLabel("Số lượng:"));
-        row2.add(spnSL);
-        row2.add(Ui.button("Thêm vào giỏ", e -> addToCart()));
-        row2.add(Ui.button("Xóa khỏi giỏ", e -> removeFromCart()));
+        JPanel info = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        info.setBackground(Theme.CARD);
+        info.setBorder(Theme.section("1. Thông tin bán hàng"));
+        info.add(new JLabel("Khách hàng:"));
+        info.add(cboKH);
+        info.add(new JLabel("Nhân viên bán:"));
+        info.add(cboNV);
 
-        JPanel north = new JPanel(new GridLayout(2, 1));
-        north.add(row1);
-        north.add(row2);
+        JPanel pick = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        pick.setBackground(Theme.CARD);
+        pick.setBorder(Theme.section("2. Chọn sản phẩm"));
+        pick.add(new JLabel("Sản phẩm:"));
+        pick.add(cboSP);
+        pick.add(new JLabel("Số lượng:"));
+        pick.add(spnSL);
+        pick.add(Ui.button("Thêm vào giỏ", Theme.GREEN, e -> addToCart()));
+        pick.add(Ui.button("Xóa khỏi giỏ", Theme.ORANGE, e -> removeFromCart()));
+
+        JPanel north = new JPanel();
+        north.setLayout(new BoxLayout(north, BoxLayout.Y_AXIS));
+        north.add(info);
+        north.add(Box.createVerticalStrut(10));
+        north.add(pick);
         add(north, BorderLayout.NORTH);
 
-        tblCart.setRowHeight(24);
-        add(new JScrollPane(tblCart), BorderLayout.CENTER);
+        Theme.styleTable(tblCart);
+        JScrollPane scroll = new JScrollPane(tblCart);
+        scroll.setBorder(BorderFactory.createLineBorder(Theme.BORDER));
+        scroll.getViewport().setBackground(Color.WHITE);
+        JPanel cartPanel = new JPanel(new BorderLayout());
+        cartPanel.setBackground(Theme.CARD);
+        cartPanel.setBorder(Theme.section("3. Giỏ hàng"));
+        cartPanel.add(scroll, BorderLayout.CENTER);
+        add(cartPanel, BorderLayout.CENTER);
 
-        lblTotal.setFont(lblTotal.getFont().deriveFont(Font.BOLD, 20f));
-        JPanel south = new JPanel(new BorderLayout());
-        south.add(lblTotal, BorderLayout.WEST);
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        btns.add(Ui.button("Hủy giỏ hàng", e -> {
+        lblTotal.setFont(lblTotal.getFont().deriveFont(Font.BOLD, 24f));
+        lblTotal.setForeground(new Color(0xD32F2F));
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 2));
+        btns.setOpaque(false);
+        btns.add(Ui.button("Hủy giỏ hàng", Theme.RED, e -> {
             cart.setRowCount(0);
             updateTotal();
         }));
-        btns.add(Ui.button("Thanh toán", e -> pay()));
+        btns.add(Theme.bigButton("THANH TOÁN", Theme.TEAL, e -> pay()));
+        JPanel south = new JPanel(new BorderLayout());
+        south.setBackground(Theme.CARD);
+        south.setBorder(Theme.section("4. Thanh toán"));
+        south.add(lblTotal, BorderLayout.WEST);
         south.add(btns, BorderLayout.EAST);
         add(south, BorderLayout.SOUTH);
 

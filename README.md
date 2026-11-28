@@ -14,6 +14,7 @@
 
 ## Cách chạy
 1. **Tạo CSDL:** mở SSMS, mở file `database/QuanLyBanHang.sql`, nhấn Execute (chỉ chạy 1 lần).
+   Sau đó chạy thêm `database/TaiKhoan.sql` để tạo tài khoản đăng nhập (mặc định: `admin` / `123456`).
 2. **Cấu hình kết nối:** mở `src/main/java/qlbh/Db.java`, sửa `USER`, `PASSWORD` (và `URL` nếu cần).
    - SQL Server phải bật chế độ Mixed Mode (có tài khoản `sa`) và bật **TCP/IP, cổng 1433** trong SQL Server Configuration Manager (sau đó restart dịch vụ SQL Server).
    - Nếu dùng instance `SQLEXPRESS`: đổi URL thành `jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=QuanLyBanHang;encrypt=true;trustServerCertificate=true;`

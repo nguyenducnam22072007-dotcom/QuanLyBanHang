@@ -19,7 +19,7 @@ public class KhachHangPanel extends CrudPanel {
 
     public KhachHangPanel() {
         txtMa.setEditable(false);
-        init();
+        init("khách hàng");
     }
 
     @Override

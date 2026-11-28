@@ -15,7 +15,7 @@ public class LoaiSanPhamPanel extends CrudPanel {
 
     public LoaiSanPhamPanel() {
         txtMa.setEditable(false);
-        init();
+        init("loại sản phẩm");
     }
 
     @Override

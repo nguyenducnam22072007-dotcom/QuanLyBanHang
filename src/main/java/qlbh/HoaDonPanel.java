@@ -1,6 +1,7 @@
 package qlbh;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,23 +23,32 @@ public class HoaDonPanel extends JPanel implements Refreshable {
     private final JTextField txtSearch = new JTextField(22);
 
     public HoaDonPanel() {
-        setLayout(new BorderLayout(0, 8));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(0, 10));
+        setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
-        bar.add(new JLabel("Tìm theo tên khách hàng / mã hóa đơn:"));
-        bar.add(txtSearch);
-        bar.add(Ui.button("Tìm", e -> refresh()));
-        bar.add(Ui.button("Làm mới", e -> {
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
+        left.setOpaque(false);
+        left.add(new JLabel("Tên khách hàng / mã hóa đơn:"));
+        left.add(txtSearch);
+        left.add(Ui.button("Tìm", Theme.BLUE, e -> refresh()));
+        left.add(Ui.button("Làm mới", Theme.GRAY, e -> {
             txtSearch.setText("");
             refresh();
         }));
-        bar.add(Ui.button("Xóa hóa đơn", e -> deleteInvoice()));
         txtSearch.addActionListener(e -> refresh());
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
+        right.setOpaque(false);
+        right.add(Ui.button("Xóa hóa đơn", Theme.RED, e -> deleteInvoice()));
+
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBackground(Theme.CARD);
+        bar.setBorder(Theme.section("Tìm kiếm & thao tác"));
+        bar.add(left, BorderLayout.WEST);
+        bar.add(right, BorderLayout.EAST);
         add(bar, BorderLayout.NORTH);
 
-        tblHD.setRowHeight(24);
-        tblCT.setRowHeight(24);
+        Theme.styleTable(tblHD);
+        Theme.styleTable(tblCT);
         tblHD.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblHD.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tblHD.getSelectedRow() >= 0) {
@@ -46,13 +56,26 @@ public class HoaDonPanel extends JPanel implements Refreshable {
             }
         });
 
-        JScrollPane detail = new JScrollPane(tblCT);
-        detail.setBorder(BorderFactory.createTitledBorder("Chi tiết hóa đơn"));
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(tblHD), detail);
-        split.setResizeWeight(0.6);
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                card("Danh sách hóa đơn (bấm vào một hóa đơn để xem chi tiết)", tblHD),
+                card("Chi tiết hóa đơn đang chọn", tblCT));
+        split.setResizeWeight(0.55);
+        split.setBorder(null);
+        split.setDividerSize(10);
         add(split, BorderLayout.CENTER);
 
         refresh();
+    }
+
+    private static JPanel card(String title, JTable t) {
+        JScrollPane scroll = new JScrollPane(t);
+        scroll.setBorder(BorderFactory.createLineBorder(Theme.BORDER));
+        scroll.getViewport().setBackground(Color.WHITE);
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(Theme.CARD);
+        p.setBorder(Theme.section(title));
+        p.add(scroll, BorderLayout.CENTER);
+        return p;
     }
 
     private int selectedMaHD() {

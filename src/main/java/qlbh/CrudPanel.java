@@ -1,10 +1,10 @@
 package qlbh;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.sql.SQLException;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -41,38 +41,52 @@ public abstract class CrudPanel extends JPanel implements Refreshable {
 
     protected abstract void clearForm();
 
-    /** Lớp con gọi hàm này ở cuối constructor. */
-    protected final void init() {
-        setLayout(new BorderLayout(0, 8));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    /** Lớp con gọi hàm này ở cuối constructor, truyền tên đối tượng (vd: "sản phẩm"). */
+    protected final void init(String entityName) {
+        setLayout(new BorderLayout(0, 10));
+        setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
-        bar.add(Ui.button("Thêm", e -> run(this::doInsert, "Đã thêm thành công.", false)));
-        bar.add(Ui.button("Sửa", e -> run(this::doUpdate, "Đã cập nhật thành công.", true)));
-        bar.add(Ui.button("Xóa", e -> {
+        // Khung 1: form nhập thông tin
+        JPanel form = buildForm();
+        form.setBorder(Theme.section("Thông tin " + entityName));
+
+        // Khung 2: nút chức năng + tìm kiếm
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
+        actions.setOpaque(false);
+        actions.add(Ui.button("Thêm", Theme.GREEN, e -> run(this::doInsert, "Đã thêm thành công.", false)));
+        actions.add(Ui.button("Sửa", Theme.ORANGE, e -> run(this::doUpdate, "Đã cập nhật thành công.", true)));
+        actions.add(Ui.button("Xóa", Theme.RED, e -> {
             if (hasSelection() && Ui.confirm(this, "Bạn có chắc muốn xóa dòng đã chọn?")) {
                 run(this::doDelete, "Đã xóa thành công.", true);
             }
         }));
-        bar.add(Ui.button("Làm mới", e -> {
+        actions.add(Ui.button("Làm mới", Theme.GRAY, e -> {
             txtSearch.setText("");
             table.clearSelection();
             clearForm();
             refresh();
         }));
-        bar.add(Box.createHorizontalStrut(24));
-        bar.add(new JLabel("Tìm kiếm:"));
-        bar.add(txtSearch);
-        bar.add(Ui.button("Tìm", e -> refresh()));
+
+        JPanel search = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
+        search.setOpaque(false);
+        search.add(new JLabel("Tìm kiếm:"));
+        search.add(txtSearch);
+        search.add(Ui.button("Tìm", Theme.BLUE, e -> refresh()));
         txtSearch.addActionListener(e -> refresh());
 
-        JPanel north = new JPanel(new BorderLayout());
-        north.add(buildForm(), BorderLayout.CENTER);
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBackground(Theme.CARD);
+        bar.setBorder(Theme.section("Chức năng"));
+        bar.add(actions, BorderLayout.WEST);
+        bar.add(search, BorderLayout.EAST);
+
+        JPanel north = new JPanel(new BorderLayout(0, 10));
+        north.add(form, BorderLayout.CENTER);
         north.add(bar, BorderLayout.SOUTH);
         add(north, BorderLayout.NORTH);
-        add(new JScrollPane(table), BorderLayout.CENTER);
 
-        table.setRowHeight(24);
+        // Khung 3: danh sách
+        Theme.styleTable(table);
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(e -> {
@@ -81,6 +95,15 @@ public abstract class CrudPanel extends JPanel implements Refreshable {
                 fillForm(table.convertRowIndexToModel(r));
             }
         });
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBorder(BorderFactory.createLineBorder(Theme.BORDER));
+        scroll.getViewport().setBackground(Color.WHITE);
+        JPanel list = new JPanel(new BorderLayout());
+        list.setBackground(Theme.CARD);
+        list.setBorder(Theme.section("Danh sách " + entityName + " (bấm vào một dòng để sửa / xóa)"));
+        list.add(scroll, BorderLayout.CENTER);
+        add(list, BorderLayout.CENTER);
+
         refresh();
     }
 

@@ -17,7 +17,7 @@ public class NhanVienPanel extends CrudPanel {
 
     public NhanVienPanel() {
         txtMa.setEditable(false);
-        init();
+        init("nhân viên");
     }
 
     @Override

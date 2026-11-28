@@ -120,6 +120,7 @@ public final class Ui {
     /** Form nhãn + ô nhập, chia 2 cột. */
     public static JPanel form(String[] labels, JComponent[] fields) {
         JPanel p = new JPanel(new GridBagLayout());
+        p.setBackground(Theme.CARD);
         GridBagConstraints g = new GridBagConstraints();
         g.insets = new Insets(4, 6, 4, 6);
         g.anchor = GridBagConstraints.WEST;
@@ -139,9 +140,11 @@ public final class Ui {
     }
 
     public static JButton button(String text, ActionListener l) {
-        JButton b = new JButton(text);
-        b.addActionListener(l);
-        return b;
+        return Theme.button(text, Theme.BLUE, l);
+    }
+
+    public static JButton button(String text, java.awt.Color color, ActionListener l) {
+        return Theme.button(text, color, l);
     }
 
     /** Nạp ComboBox từ câu SELECT có cột 1 = mã (int), cột 2 = tên hiển thị. */
